@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +18,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+}); //http://localhost:8000/
+
+
+Route::middleware(['auth', 'verified'])
+    ->name('admin.')
+    ->prefix('admin')
+    ->group(function () {
+
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard'); //http://localhost:8000/admin
+
+        // Posts route here
+        Route::resource('posts', PostController::class);
+    });
+
 
 
 Route::middleware('auth')->group(function () {
@@ -27,13 +41,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
-
-Route::middleware('auth', 'verified')
-    ->name('adimn.')
-    ->prefix('admin')
-    ->group(function () {
-        // metti qui le rotte protette da autenticazione di sistema
-        // tutte le rotte devono condividere stesso nome e prefix  e il middleware
-        // il nome sarà una roba tipo admin. cosi da concatenare altre rotte tutte con inizio adimn
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard'); // name sarà admin.dashboard
-    });
